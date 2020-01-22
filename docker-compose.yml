@@ -1,0 +1,49 @@
+version: '3.7'
+
+services:
+  # create producer app
+  producer:
+    build: ./producer
+    image: producer
+    networks:
+      - tweet_nw
+
+    depends_on:
+      - rabbit
+      - mongo
+      - consumer
+
+  # create consemer app
+  consumer:
+    build: ./consumer
+    image: consumer
+    # define network
+    networks:
+      - tweet_nw
+
+    depends_on:
+      - rabbit
+      - mongo
+
+  # create mongoDB
+  mongo:
+    image: "mongo"
+    container_name: mongo_db
+    volumes:
+      - ./data:/data
+
+    networks:
+      - tweet_nw
+
+  # create rabbitMQ
+  rabbit:
+    image: rabbitmq
+    container_name: rabbit
+    networks:
+      - tweet_nw
+
+#   ports:
+#      - 15672:8888
+
+networks:
+  tweet_nw:
